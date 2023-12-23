@@ -32,7 +32,8 @@ def main():
     st.title('Query Categorization App with OpenAI GPT')
 
     # Load the OpenAI API key from Streamlit secrets
-    openai.api_key = st.secrets["openai_api_key"]["api_key"]
+    openai.api_key = st.secrets["openai_api_key"]
+
 
     # File uploader
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
