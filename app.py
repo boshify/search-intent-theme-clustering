@@ -1,31 +1,38 @@
+import openai
 import streamlit as st
 import pandas as pd
-from sentence_transformers import SentenceTransformer
-from sklearn.cluster import KMeans
 
-# Function to categorize queries using unsupervised learning with BERT embeddings
-def categorize_queries(dataframe):
-    # Combine columns for semantic analysis
-    dataframe['combined'] = dataframe['type'] + " " + dataframe['modifier'] + " " + dataframe['question']
-    
-    # Load pre-trained BERT model
-    model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+# Function to categorize queries using OpenAI's GPT model
+def categorize_queries_with_gpt(dataframe):
+    categories = []
+    for index, row in dataframe.iterrows():
+        query = row['question']
 
-    # Generating embeddings
-    embeddings = model.encode(dataframe['combined'].tolist(), show_progress_bar=True)
+        # Modify the prompt as needed to fit the categorization style
+        prompt = f"Categorize the following query based on search intent themes: '{query}'"
 
-    # KMeans clustering
-    n_clusters = 5  # This number can be adjusted
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-    kmeans.fit(embeddings)
+        # Sending request to OpenAI API
+        try:
+            response = openai.Completion.create(
+                engine="text-davinci-003",  # or another suitable engine
+                prompt=prompt,
+                max_tokens=10  # Adjust as needed
+            )
+            category = response.choices[0].text.strip()
+        except Exception as e:
+            category = "Error: " + str(e)
 
-    # Assigning the cluster labels to the dataframe
-    dataframe['Content Type'] = kmeans.labels_
+        categories.append(category)
+
+    dataframe['Content Type'] = categories
     return dataframe
 
 # Streamlit app
 def main():
-    st.title('Query Categorization App with BERT and Clustering')
+    st.title('Query Categorization App with OpenAI GPT')
+
+    # Load the OpenAI API key from Streamlit secrets
+    openai.api_key = st.secrets["openai"]["api_key"]
 
     # File uploader
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
@@ -33,7 +40,7 @@ def main():
         data = pd.read_csv(uploaded_file)
 
         if st.button('Categorize Queries'):
-            result = categorize_queries(data)
+            result = categorize_queries_with_gpt(data)
             st.write(result)
 
             # Export to CSV
