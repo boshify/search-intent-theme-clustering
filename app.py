@@ -2,23 +2,23 @@ import openai
 import streamlit as st
 import pandas as pd
 
-# Function to categorize queries using OpenAI's GPT model with the latest API
+# Function to categorize queries using the updated OpenAI API
 def categorize_queries_with_gpt(dataframe):
     categories = []
     for index, row in dataframe.iterrows():
         query = row['question']
 
-        # Modify the prompt as needed to fit the categorization style
+        # Modify the prompt to fit the categorization style
         prompt = f"Categorize the following query based on search intent themes: '{query}'"
 
-        # Sending request to OpenAI API using the latest API format
+        # Sending request to the updated OpenAI API
         try:
-            response = openai.Completion.create(
-                model="text-davinci-003",  # or another suitable model
-                prompt=prompt,
-                max_tokens=10  # Adjust as needed
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",  # Update to the latest available model
+                messages=[{"role": "system", "content": "You are a helpful assistant."}, 
+                          {"role": "user", "content": prompt}]
             )
-            category = response.choices[0].text.strip()
+            category = response['choices'][0]['message']['content']
         except Exception as e:
             category = "Error: " + str(e)
 
