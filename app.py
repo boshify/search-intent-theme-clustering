@@ -2,7 +2,7 @@ import openai
 import streamlit as st
 import pandas as pd
 
-# Function to categorize queries using OpenAI's GPT model
+# Function to categorize queries using OpenAI's GPT model with the latest API
 def categorize_queries_with_gpt(dataframe):
     categories = []
     for index, row in dataframe.iterrows():
@@ -11,12 +11,12 @@ def categorize_queries_with_gpt(dataframe):
         # Modify the prompt as needed to fit the categorization style
         prompt = f"Categorize the following query based on search intent themes: '{query}'"
 
-        # Sending request to OpenAI API
+        # Sending request to OpenAI API using the latest API format
         try:
             response = openai.Completion.create(
-                engine="gpt-3.5-turbo-1106",  # or another suitable engine
+                model="text-davinci-003",  # or another suitable model
                 prompt=prompt,
-                max_tokens=1000  # Adjust as needed
+                max_tokens=10  # Adjust as needed
             )
             category = response.choices[0].text.strip()
         except Exception as e:
@@ -33,7 +33,6 @@ def main():
 
     # Load the OpenAI API key from Streamlit secrets
     openai.api_key = st.secrets["openai_api_key"]
-
 
     # File uploader
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
