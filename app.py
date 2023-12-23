@@ -16,7 +16,7 @@ def categorize_queries_with_gpt(dataframe):
             response = openai.Completion.create(
                 engine="gpt-3.5-turbo-1106",  # or another suitable engine
                 prompt=prompt,
-                max_tokens=10  # Adjust as needed
+                max_tokens=1000  # Adjust as needed
             )
             category = response.choices[0].text.strip()
         except Exception as e:
@@ -32,7 +32,7 @@ def main():
     st.title('Query Categorization App with OpenAI GPT')
 
     # Load the OpenAI API key from Streamlit secrets
-    openai.api_key = st.secrets["openai"]["api_key"]
+    openai.api_key = st.secrets["openai_api_key"]["api_key"]
 
     # File uploader
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
