@@ -14,7 +14,7 @@ def categorize_queries_with_gpt(dataframe):
         # Sending request to OpenAI API
         try:
             response = openai.Completion.create(
-                engine="text-davinci-003",  # or another suitable engine
+                engine="gpt-3.5-turbo-1106",  # or another suitable engine
                 prompt=prompt,
                 max_tokens=10  # Adjust as needed
             )
